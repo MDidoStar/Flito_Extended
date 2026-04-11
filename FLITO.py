@@ -64,7 +64,7 @@ with st.sidebar:
     # --- Admin Access ---
     st.subheader("🔐 Admin Access")
     admin_code = st.text_input("Enter admin code:", type="password", key="admin_code")
-    ADMIN_CODE = st.secrets["admin_code"]
+    ADMIN_CODE = st.secrets["Admin_code"]
 
     if st.button("📋 All Feedbacks", key="btn_all_feedbacks"):
         if admin_code == ADMIN_CODE:
