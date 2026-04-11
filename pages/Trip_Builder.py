@@ -117,7 +117,7 @@ st.write("Get a complete day-by-day itinerary tailored to your dates and budget.
 countries_list = get_countries()
 
 trip_code = st.text_input("Enter Premium Code to access Trip Builder:", type="password", key="trip_code_input")
-key = st.secrets("Trip_Builder_pass")
+key = st.secrets["Trip_Builder_pass"]
 if trip_code == key:
     st.success("Access Granted!")
     st.subheader("Step 1: Trip Mode")
