@@ -35,7 +35,7 @@ with st.sidebar:
         st.stop()
 
     st.header("Customize the app!")
-    output_number = st.slider("How many outputs shall I suggest?:", 1, 10, 1, key="output_num")
+    output_number = st.slider("How many outputs shall I suggest?:", 1, 10, 1, key="main_output_num")
     st.divider()
 
     # --- Feedback Section ---
