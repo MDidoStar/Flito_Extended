@@ -64,7 +64,7 @@ with st.sidebar:
     # --- Admin Access ---
     st.subheader("🔐 Admin Access")
     admin_code = st.text_input("Enter admin code:", type="password", key="admin_code")
-    ADMIN_CODE = "Mohamed+Diaa_Eldin_Mohamrt0987654321mondbo"
+    ADMIN_CODE = st.secrets["admin_code"]
 
     if st.button("📋 All Feedbacks", key="btn_all_feedbacks"):
         if admin_code == ADMIN_CODE:
@@ -155,20 +155,36 @@ else:
 
 st.markdown('<div class="section-label">Available Tools</div>', unsafe_allow_html=True)
 
+
+#-----Navigation--------#
+pg = st.navigation([
+    st.Page("pages/sign_up.py", title="Sign In or Up", icon="🔐"),
+    st.Page("pages/Map.py", title="Map", icon="🗺️"),
+    st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
+    st.Page("pages/Food.py", title="Food", icon="🍝"),
+    st.Page("pages/Tourism.py", title="Tourism", icon="🏝️"),
+    st.Page("pages/Transportation.py", title="Transportation", icon="🚗"),
+    st.Page("pages/Shopping.py", title="Shopping", icon="🛍️"),
+    st.Page("pages/Budget.py", title="Budget", icon="💰"),
+    st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
+    st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
+    st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️")
+])
+
+pg.run()  # ✅ called once, on the object returned by st.navigation()
+
+
 # ------SignUp Card------#
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">FLITO SignUp</div>
+    <div class="app-card-title">🔐 FLITO SignUp</div>
     <div class="app-card-desc">
         SignUp to make your prefrences always with us
     </div>
 </div>
 """, unsafe_allow_html=True)
 if st.button("Sign Up →", key="btn_sihnup"):
-    sn = st.navigation([
-    st.Page("pages/sign_up.py", title="Sign In or Up", icon="🔐")
-])
-    sn.run
+    st.switch_page("pages/sign_up.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
 
