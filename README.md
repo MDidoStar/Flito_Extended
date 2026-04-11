@@ -103,8 +103,6 @@ The crown jewel of FLITO. Generate a complete, personalized day-by-day itinerary
 
 Your next adventure is waiting. Let FLITO take care of the planning — so you can focus on the memories.
 
-**[Sign Up Free →](#)** &nbsp;|&nbsp; **[Try Trip Builder →](#)** &nbsp;|&nbsp; **[Learn More →](#)**
-
 ---
 
 *Powered by Google Gemini AI · Live currency data by ExchangeRate-API*
