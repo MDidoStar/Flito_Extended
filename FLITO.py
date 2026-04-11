@@ -4,8 +4,6 @@ from datetime import date
 from pymongo.mongo_client import MongoClient
 from color import edit
 
-
-
 st.set_page_config(page_title="FLITO: AI Traveling Blogger", page_icon='logo.png', layout="wide")
 
 edit()
@@ -23,85 +21,37 @@ except Exception as e:
     mongo_ok = False
     mongo_error = str(e)
 
-# --- Sidebar ---
+# --- Sidebar (logo + connection status ONLY — no widgets with keys) ---
 with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
 
-    # Connection status
     if mongo_ok:
         st.success("✅ Connected to flito")
     else:
         st.error(f"❌ Connection failed: {mongo_error}")
         st.stop()
 
-    st.divider()
+# --- Navigation ---
+pg = st.navigation([
+    st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
+    st.Page("pages/sign_up.py", title="Sign In or Up", icon="🔐"),
+    st.Page("pages/Map.py", title="Map", icon="🗺️"),
+    st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
+    st.Page("pages/Food.py", title="Food", icon="🍝"),
+    st.Page("pages/Tourism.py", title="Tourism", icon="🏝️"),
+    st.Page("pages/Transportation.py", title="Transportation", icon="🚗"),
+    st.Page("pages/Shopping.py", title="Shopping", icon="🛍️"),
+    st.Page("pages/Budget.py", title="Budget", icon="💰"),
+    st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
+    st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
+    st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️")
+])
 
-    # --- Feedback Section ---
-    st.subheader("💬 Send Feedback")
-    st.write('Rate us (out of 5):')
-    rating = st.feedback('stars', key="flito_main_rating")
-    feedback = st.text_input("Any suggestions for improvement?", key="flito_main_feedback")
-    if st.button('Send Feedback', key='flito_main_feedback_btn'):
-        if feedback_collection is not None:
-            try:
-                val_rating = rating + 1 if rating is not None else None
-                feedback_data = {
-                    "rating": val_rating,
-                    "feedback": feedback,
-                    "date": str(date.today())
-                }
-                feedback_collection.insert_one(feedback_data)
-                st.success("✅ Feedback saved to Flito, Thanks For your feedback 😊!")
-            except Exception as e:
-                st.error(f"Failed to save feedback. Error: {e}")
-        else:
-            st.error("Database connection was not set up.")
+pg.run()
 
-    st.divider()
-
-    # --- Admin Access ---
-    st.subheader("🔐 Admin Access")
-    admin_code = st.text_input("Enter admin code:", type="password", key="flito_main_admin_code")
-    ADMIN_CODE = st.secrets["Admin_code"]
-
-    if st.button("📋 All Feedbacks", key="flito_main_btn_all_feedbacks"):
-        if admin_code == ADMIN_CODE:
-            feedbacks = list(feedback_collection.find())
-            if feedbacks:
-                for i, f in enumerate(feedbacks, 1):
-                    st.markdown(f"**#{i}**")
-                    st.write(f"⭐ Rating: {f.get('rating', 'N/A')}")
-                    st.write(f"💬 Feedback: {f.get('feedback', 'N/A')}")
-                    st.write(f"📅 Date: {f.get('date', 'N/A')}")
-                    st.divider()
-            else:
-                st.info("No feedbacks found.")
-        else:
-            st.error("❌ Wrong code.")
-
-    if "confirm_delete" not in st.session_state:
-        st.session_state.confirm_delete = False
-
-    if st.button("🗑️ Clear All Feedbacks", key="flito_main_btn_clear"):
-        if admin_code == ADMIN_CODE:
-            st.session_state.confirm_delete = True
-        else:
-            st.error("❌ Wrong code.")
-
-    if st.session_state.confirm_delete:
-        st.warning("⚠️ Are you sure? This will delete ALL feedbacks!")
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("✅ Yes, Delete All", key="flito_main_btn_yes_delete"):
-                result = feedback_collection.delete_many({})
-                st.success(f"Deleted {result.deleted_count} feedbacks.")
-                st.session_state.confirm_delete = False
-        with col2:
-            if st.button("❌ Cancel", key="flito_main_btn_cancel_delete"):
-                st.session_state.confirm_delete = False
-
-   # st.subheader('Would you like to go Premium?')
-   # st.link_button('Subscribe now!', 'https://buy.stripe.com/test_3cIcN592b5iLfN93mU8so00')
+# ─────────────────────────────────────────────────────────────────────────────
+# Everything below only runs when FLITO.py is the active page
+# ─────────────────────────────────────────────────────────────────────────────
 
 # --- Header ---
 st.markdown('<div class="hero-title">🌍 FLITO</div>', unsafe_allow_html=True)
@@ -119,22 +69,22 @@ if user:
         st.write("Tell us how you like to travel — these will personalize all AI suggestions.")
         col1, col2 = st.columns(2)
         with col1:
-            pref_language   = st.text_input("Preferred Language", key="pref_lang")
-            pref_budget     = st.selectbox("Budget Style", ["Budget-friendly", "Moderate", "Luxury"], index=1, key="pref_budget")
-            pref_food       = st.selectbox("Food Preference", ["No preference", "Vegetarian", "Vegan", "Halal", "Seafood lover", "Local cuisine only"], key="pref_food")
+            pref_language  = st.text_input("Preferred Language", key="pref_lang")
+            pref_budget    = st.selectbox("Budget Style", ["Budget-friendly", "Moderate", "Luxury"], index=1, key="pref_budget")
+            pref_food      = st.selectbox("Food Preference", ["No preference", "Vegetarian", "Vegan", "Halal", "Seafood lover", "Local cuisine only"], key="pref_food")
         with col2:
-            pref_travel     = st.selectbox("Travel Style", ["Explorer", "Relaxed", "Adventure", "Cultural", "Family", "Business"], key="pref_travel")
-            pref_activity   = st.selectbox("Favorite Activity", ["Sightseeing", "Museums", "Beaches", "Shopping", "Nightlife", "Nature & Hiking"], key="pref_activity")
-            pref_transport  = st.selectbox("Preferred Transport", ["Any", "Taxi", "Public Transport", "Car Rental", "Walking"], key="pref_transport")
+            pref_travel    = st.selectbox("Travel Style", ["Explorer", "Relaxed", "Adventure", "Cultural", "Family", "Business"], key="pref_travel")
+            pref_activity  = st.selectbox("Favorite Activity", ["Sightseeing", "Museums", "Beaches", "Shopping", "Nightlife", "Nature & Hiking"], key="pref_activity")
+            pref_transport = st.selectbox("Preferred Transport", ["Any", "Taxi", "Public Transport", "Car Rental", "Walking"], key="pref_transport")
 
         if st.button("💾 Save Preferences", key="save_prefs"):
             new_prefs = {
-                "language":   pref_language,
-                "budget":     pref_budget,
-                "food":       pref_food,
+                "language":     pref_language,
+                "budget":       pref_budget,
+                "food":         pref_food,
                 "travel_style": pref_travel,
-                "activity":   pref_activity,
-                "transport":  pref_transport,
+                "activity":     pref_activity,
+                "transport":    pref_transport,
             }
             try:
                 db["users"].update_one(
@@ -153,39 +103,16 @@ else:
 
 st.markdown('<div class="section-label">Available Tools</div>', unsafe_allow_html=True)
 
-
-#-----Navigation--------#
-pg = st.navigation([
-    st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
-    st.Page("pages/sign_up.py", title="Sign In or Up", icon="🔐"),
-    st.Page("pages/Map.py", title="Map", icon="🗺️"),
-    st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
-    st.Page("pages/Food.py", title="Food", icon="🍝"),
-    st.Page("pages/Tourism.py", title="Tourism", icon="🏝️"),
-    st.Page("pages/Transportation.py", title="Transportation", icon="🚗"),
-    st.Page("pages/Shopping.py", title="Shopping", icon="🛍️"),
-    st.Page("pages/Budget.py", title="Budget", icon="💰"),
-    st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
-    st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
-    st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️")
-])
-
-pg.run()  # ✅ called once, on the object returned by st.navigation()
-
-
 # ------SignUp Card------#
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">🔐 FLITO SignUp</div>
-    <div class="app-card-desc">
-        SignUp to make your prefrences always with us
-    </div>
+    <div class="app-card-desc">SignUp to make your preferences always with us</div>
 </div>
 """, unsafe_allow_html=True)
 if st.button("Sign Up →", key="btn_signup"):
     st.switch_page("pages/sign_up.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
-
 
 # --- Card: Map ---
 st.markdown("""
@@ -204,7 +131,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 # --- Card: Hotels ---
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">🏨FLITO Hotels</div>
+    <div class="app-card-title">🏨 FLITO Hotels</div>
     <div class="app-card-desc">
         Find the best hotels tailored to your budget and star rating.
         Get detailed info including price per night, facilities, and contact details — powered by Gemini AI.
@@ -218,7 +145,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 # --- Card: Food ---
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">🍝FLITO Food</div>
+    <div class="app-card-title">🍝 FLITO Food</div>
     <div class="app-card-desc">
         Discover top restaurants and cafes wherever you travel. Filter by cuisine, price,
         and rating to find your perfect dining experience.
@@ -232,7 +159,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 # --- Card: Tourism ---
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">🏝️FLITO Tourism</div>
+    <div class="app-card-title">🏝️ FLITO Tourism</div>
     <div class="app-card-desc">
         Discover museums, beaches, historical sites, and hidden gems.
         Filter by activity type and cost to plan the perfect day out.
@@ -246,7 +173,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 # --- Card: Transportation ---
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">🚗FLITO Transportation</div>
+    <div class="app-card-title">🚗 FLITO Transportation</div>
     <div class="app-card-desc">
         Find the best way to get around — taxis, buses, trains, flights, or car rentals.
         Enter your origin and destination to get point-to-point recommendations.
@@ -260,7 +187,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 # --- Card: Shopping ---
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">🛍️FLITO Shopping</div>
+    <div class="app-card-title">🛍️ FLITO Shopping</div>
     <div class="app-card-desc">
         Shop til you drop! Find malls, markets, boutiques, and outlet stores.
         Tell us what you're looking for and we'll find the best spots.
@@ -274,7 +201,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 # --- Card: Budget ---
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">💰FLITO Budget</div>
+    <div class="app-card-title">💰 FLITO Budget</div>
     <div class="app-card-desc">
         Track every expense of your trip in real-time. Set a total budget, log costs as you go,
         and always know exactly how much you have left.
@@ -288,7 +215,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 # --- Card: Currency ---
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">💱FLITO Currency Converter</div>
+    <div class="app-card-title">💱 FLITO Currency Converter</div>
     <div class="app-card-desc">
         Convert between any two currencies with live exchange rates.
         Supports hundreds of global currencies powered by ExchangeRate-API.
@@ -302,7 +229,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 # --- Card: Translation ---
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">🗣️FLITO Translation</div>
+    <div class="app-card-title">🗣️ FLITO Translation</div>
     <div class="app-card-desc">
         Translate text between 50+ languages instantly using Gemini AI.
         Get the meaning and pronunciation so you can communicate confidently anywhere.
@@ -316,7 +243,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 # --- Card: Trip Builder ---
 st.markdown("""
 <div class="app-card">
-    <div class="app-card-title">✈️FLITO Trip Builder (Premium)</div>
+    <div class="app-card-title">✈️ FLITO Trip Builder (Premium)</div>
     <div class="app-card-desc">
         The ultimate travel tool. Generate a complete day-by-day itinerary with hotels,
         restaurants, activities, and shopping — tailored to your dates, budget, and preferences.
@@ -328,6 +255,73 @@ if st.button("Open Trip Builder →", key="btn_trip"):
     st.switch_page("pages/Trip_Builder.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
+# --- Feedback Section (main body — avoids sidebar double-render bug) ---
+st.markdown('<div class="section-label">💬 Send Feedback</div>', unsafe_allow_html=True)
+col1, col2 = st.columns([1, 2])
+with col1:
+    st.write('Rate us (out of 5):')
+    rating = st.feedback('stars', key="feedback_stars")
+with col2:
+    feedback_text = st.text_input("Any suggestions for improvement?", key="feedback_text_input")
+
+if st.button('Send Feedback', key='send_feedback_btn'):
+    if feedback_collection is not None:
+        try:
+            val_rating = rating + 1 if rating is not None else None
+            feedback_data = {
+                "rating": val_rating,
+                "feedback": feedback_text,
+                "date": str(date.today())
+            }
+            feedback_collection.insert_one(feedback_data)
+            st.success("✅ Feedback saved! Thanks for your feedback 😊")
+        except Exception as e:
+            st.error(f"Failed to save feedback. Error: {e}")
+    else:
+        st.error("Database connection was not set up.")
+
+st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+# --- Admin Access (main body — avoids sidebar double-render bug) ---
+with st.expander("🔐 Admin Access"):
+    admin_code = st.text_input("Enter admin code:", type="password", key="admin_code_input")
+    ADMIN_CODE = st.secrets["Admin_code"]
+
+    if st.button("📋 View All Feedbacks", key="view_feedbacks_btn"):
+        if admin_code == ADMIN_CODE:
+            feedbacks = list(feedback_collection.find())
+            if feedbacks:
+                for i, f in enumerate(feedbacks, 1):
+                    st.markdown(f"**#{i}**")
+                    st.write(f"⭐ Rating: {f.get('rating', 'N/A')}")
+                    st.write(f"💬 Feedback: {f.get('feedback', 'N/A')}")
+                    st.write(f"📅 Date: {f.get('date', 'N/A')}")
+                    st.divider()
+            else:
+                st.info("No feedbacks found.")
+        else:
+            st.error("❌ Wrong code.")
+
+    if "confirm_delete" not in st.session_state:
+        st.session_state.confirm_delete = False
+
+    if st.button("🗑️ Clear All Feedbacks", key="clear_feedbacks_btn"):
+        if admin_code == ADMIN_CODE:
+            st.session_state.confirm_delete = True
+        else:
+            st.error("❌ Wrong code.")
+
+    if st.session_state.confirm_delete:
+        st.warning("⚠️ Are you sure? This will delete ALL feedbacks!")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("✅ Yes, Delete All", key="yes_delete_btn"):
+                result = feedback_collection.delete_many({})
+                st.success(f"Deleted {result.deleted_count} feedbacks.")
+                st.session_state.confirm_delete = False
+        with col2:
+            if st.button("❌ Cancel", key="cancel_delete_btn"):
+                st.session_state.confirm_delete = False
 
 # --- Footer ---
 st.caption('🌟 AI-powered recommendations using Google Gemini | Currency data from ExchangeRate-API')
