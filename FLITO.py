@@ -39,9 +39,9 @@ with st.sidebar:
     # --- Feedback Section ---
     st.subheader("💬 Send Feedback")
     st.write('Rate us (out of 5):')
-    rating = st.feedback('stars', key="trip_rating")
-    feedback = st.text_input("Any suggestions for improvement?")
-    if st.button('Send Feedback', key='feedback_btn'):
+    rating = st.feedback('stars', key="flito_main_rating")
+    feedback = st.text_input("Any suggestions for improvement?", key="flito_main_feedback")
+    if st.button('Send Feedback', key='flito_main_feedback_btn'):
         if feedback_collection is not None:
             try:
                 val_rating = rating + 1 if rating is not None else None
@@ -61,10 +61,10 @@ with st.sidebar:
 
     # --- Admin Access ---
     st.subheader("🔐 Admin Access")
-    admin_code = st.text_input("Enter admin code:", type="password", key="admin_code")
+    admin_code = st.text_input("Enter admin code:", type="password", key="flito_main_admin_code")
     ADMIN_CODE = st.secrets["Admin_code"]
 
-    if st.button("📋 All Feedbacks", key="btn_all_feedbacks"):
+    if st.button("📋 All Feedbacks", key="flito_main_btn_all_feedbacks"):
         if admin_code == ADMIN_CODE:
             feedbacks = list(feedback_collection.find())
             if feedbacks:
@@ -82,7 +82,7 @@ with st.sidebar:
     if "confirm_delete" not in st.session_state:
         st.session_state.confirm_delete = False
 
-    if st.button("🗑️ Clear All Feedbacks", key="btn_clear"):
+    if st.button("🗑️ Clear All Feedbacks", key="flito_main_btn_clear"):
         if admin_code == ADMIN_CODE:
             st.session_state.confirm_delete = True
         else:
@@ -92,12 +92,12 @@ with st.sidebar:
         st.warning("⚠️ Are you sure? This will delete ALL feedbacks!")
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("✅ Yes, Delete All", key="btn_yes_delete"):
+            if st.button("✅ Yes, Delete All", key="flito_main_btn_yes_delete"):
                 result = feedback_collection.delete_many({})
                 st.success(f"Deleted {result.deleted_count} feedbacks.")
                 st.session_state.confirm_delete = False
         with col2:
-            if st.button("❌ Cancel", key="btn_cancel_delete"):
+            if st.button("❌ Cancel", key="flito_main_btn_cancel_delete"):
                 st.session_state.confirm_delete = False
 
    # st.subheader('Would you like to go Premium?')
@@ -119,13 +119,13 @@ if user:
         st.write("Tell us how you like to travel — these will personalize all AI suggestions.")
         col1, col2 = st.columns(2)
         with col1:
-            pref_language   = st.text_input("Preferred Language",key="pref_lang")
-            pref_budget     = st.selectbox("Budget Style",          ["Budget-friendly", "Moderate", "Luxury"], index=1, key="pref_budget")
-            pref_food       = st.selectbox("Food Preference",       ["No preference", "Vegetarian", "Vegan", "Halal", "Seafood lover", "Local cuisine only"], key="pref_food")
+            pref_language   = st.text_input("Preferred Language", key="pref_lang")
+            pref_budget     = st.selectbox("Budget Style", ["Budget-friendly", "Moderate", "Luxury"], index=1, key="pref_budget")
+            pref_food       = st.selectbox("Food Preference", ["No preference", "Vegetarian", "Vegan", "Halal", "Seafood lover", "Local cuisine only"], key="pref_food")
         with col2:
-            pref_travel     = st.selectbox("Travel Style",          ["Explorer", "Relaxed", "Adventure", "Cultural", "Family", "Business"], key="pref_travel")
-            pref_activity   = st.selectbox("Favorite Activity",     ["Sightseeing", "Museums", "Beaches", "Shopping", "Nightlife", "Nature & Hiking"], key="pref_activity")
-            pref_transport  = st.selectbox("Preferred Transport",   ["Any", "Taxi", "Public Transport", "Car Rental", "Walking"], key="pref_transport")
+            pref_travel     = st.selectbox("Travel Style", ["Explorer", "Relaxed", "Adventure", "Cultural", "Family", "Business"], key="pref_travel")
+            pref_activity   = st.selectbox("Favorite Activity", ["Sightseeing", "Museums", "Beaches", "Shopping", "Nightlife", "Nature & Hiking"], key="pref_activity")
+            pref_transport  = st.selectbox("Preferred Transport", ["Any", "Taxi", "Public Transport", "Car Rental", "Walking"], key="pref_transport")
 
         if st.button("💾 Save Preferences", key="save_prefs"):
             new_prefs = {
@@ -182,7 +182,7 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
-if st.button("Sign Up →", key="btn_sihnup"):
+if st.button("Sign Up →", key="btn_signup"):
     st.switch_page("pages/sign_up.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -327,8 +327,6 @@ st.markdown("""
 if st.button("Open Trip Builder →", key="btn_trip"):
     st.switch_page("pages/Trip_Builder.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
-
-
 
 
 # --- Footer ---
