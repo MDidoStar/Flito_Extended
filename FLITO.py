@@ -39,7 +39,7 @@ with st.sidebar:
     # --- Feedback Section ---
     st.subheader("💬 Send Feedback")
     st.write('Rate us (out of 5):')
-    rating = st.feedback('stars', key="flito_main_ratino")
+    rating = st.feedback('stars', key="flito_main_rating")
     feedback = st.text_input("Any suggestions for improvement?", key="flito_main_feedback")
     if st.button('Send Feedback', key='flito_main_feedback_btn'):
         if feedback_collection is not None:
