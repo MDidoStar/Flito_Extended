@@ -158,7 +158,7 @@ st.markdown('<div class="section-label">Available Tools</div>', unsafe_allow_htm
 
 #-----Navigation--------#
 pg = st.navigation([
-    st.Page("pages/FLITO.py", title="Main Page (FLITO)", icon="🌍"),
+    st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
     st.Page("pages/sign_up.py", title="Sign In or Up", icon="🔐"),
     st.Page("pages/Map.py", title="Map", icon="🗺️"),
     st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
