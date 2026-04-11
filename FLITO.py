@@ -8,27 +8,31 @@ st.set_page_config(page_title="FLITO: AI Traveling Blogger", page_icon='logo.png
 
 edit()
 
-# --- Single MongoDB Setup (flito_db) ---
-uri = st.secrets["mongodb_uri"]
-try:
-    client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-    client.admin.command("ping")
-    db = client["flito_db"]
-    feedback_collection = db["feedback"]
-    mongo_ok = True
-except Exception as e:
-    feedback_collection = None
-    mongo_ok = False
-    mongo_error = str(e)
+# --- MongoDB Setup (cached in session_state to prevent repeated connections) ---
+if "mongo_ok" not in st.session_state:
+    uri = st.secrets["mongodb_uri"]
+    try:
+        client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+        client.admin.command("ping")
+        db = client["flito_db"]
+        st.session_state["mongo_ok"] = True
+        st.session_state["flito_db"] = db
+        st.session_state["feedback_collection"] = db["feedback"]
+    except Exception as e:
+        st.session_state["mongo_ok"] = False
+        st.session_state["mongo_error"] = str(e)
 
-# --- Sidebar (logo + connection status ONLY — no widgets with keys) ---
+mongo_ok = st.session_state.get("mongo_ok", False)
+feedback_collection = st.session_state.get("feedback_collection", None)
+db = st.session_state.get("flito_db", None)
+
+# --- Sidebar ---
 with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
-
     if mongo_ok:
         st.success("✅ Connected to flito")
     else:
-        st.error(f"❌ Connection failed: {mongo_error}")
+        st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
         st.stop()
 
 # --- Navigation ---
@@ -44,7 +48,7 @@ pg = st.navigation([
     st.Page("pages/Budget.py", title="Budget", icon="💰"),
     st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
     st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
-    st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️")
+    st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️"),
 ])
 
 pg.run()
@@ -67,15 +71,26 @@ if user:
 
     with st.expander("⚙️ Your Travel Preferences", expanded=False):
         st.write("Tell us how you like to travel — these will personalize all AI suggestions.")
+        existing_prefs = user.get("preferences", {})
         col1, col2 = st.columns(2)
         with col1:
-            pref_language  = st.text_input("Preferred Language", key="pref_lang")
-            pref_budget    = st.selectbox("Budget Style", ["Budget-friendly", "Moderate", "Luxury"], index=1, key="pref_budget")
-            pref_food      = st.selectbox("Food Preference", ["No preference", "Vegetarian", "Vegan", "Halal", "Seafood lover", "Local cuisine only"], key="pref_food")
+            pref_language  = st.text_input("Preferred Language", value=existing_prefs.get("language", ""), key="pref_lang")
+            budget_options = ["Budget-friendly", "Moderate", "Luxury"]
+            budget_index = budget_options.index(existing_prefs.get("budget", "Moderate")) if existing_prefs.get("budget") in budget_options else 1
+            pref_budget    = st.selectbox("Budget Style", budget_options, index=budget_index, key="pref_budget")
+            food_options   = ["No preference", "Vegetarian", "Vegan", "Halal", "Seafood lover", "Local cuisine only"]
+            food_index     = food_options.index(existing_prefs.get("food", "No preference")) if existing_prefs.get("food") in food_options else 0
+            pref_food      = st.selectbox("Food Preference", food_options, index=food_index, key="pref_food")
         with col2:
-            pref_travel    = st.selectbox("Travel Style", ["Explorer", "Relaxed", "Adventure", "Cultural", "Family", "Business"], key="pref_travel")
-            pref_activity  = st.selectbox("Favorite Activity", ["Sightseeing", "Museums", "Beaches", "Shopping", "Nightlife", "Nature & Hiking"], key="pref_activity")
-            pref_transport = st.selectbox("Preferred Transport", ["Any", "Taxi", "Public Transport", "Car Rental", "Walking"], key="pref_transport")
+            travel_options  = ["Explorer", "Relaxed", "Adventure", "Cultural", "Family", "Business"]
+            travel_index    = travel_options.index(existing_prefs.get("travel_style", "Explorer")) if existing_prefs.get("travel_style") in travel_options else 0
+            pref_travel     = st.selectbox("Travel Style", travel_options, index=travel_index, key="pref_travel")
+            activity_options = ["Sightseeing", "Museums", "Beaches", "Shopping", "Nightlife", "Nature & Hiking"]
+            activity_index   = activity_options.index(existing_prefs.get("activity", "Sightseeing")) if existing_prefs.get("activity") in activity_options else 0
+            pref_activity   = st.selectbox("Favorite Activity", activity_options, index=activity_index, key="pref_activity")
+            transport_options = ["Any", "Taxi", "Public Transport", "Car Rental", "Walking"]
+            transport_index   = transport_options.index(existing_prefs.get("transport", "Any")) if existing_prefs.get("transport") in transport_options else 0
+            pref_transport  = st.selectbox("Preferred Transport", transport_options, index=transport_index, key="pref_transport")
 
         if st.button("💾 Save Preferences", key="save_prefs"):
             new_prefs = {
@@ -87,12 +102,15 @@ if user:
                 "transport":    pref_transport,
             }
             try:
-                db["users"].update_one(
-                    {"Username": user["Username"]},
-                    {"$set": {"preferences": new_prefs}}
-                )
-                st.session_state["logged_in_user"]["preferences"] = new_prefs
-                st.success("✅ Preferences saved! All AI tools will now use these.")
+                if db is not None:
+                    db["users"].update_one(
+                        {"Username": user["Username"]},
+                        {"$set": {"preferences": new_prefs}}
+                    )
+                    st.session_state["logged_in_user"]["preferences"] = new_prefs
+                    st.success("✅ Preferences saved! All AI tools will now use these.")
+                else:
+                    st.error("Database not available.")
             except Exception as e:
                 st.error(f"Could not save preferences: {e}")
 
@@ -255,7 +273,7 @@ if st.button("Open Trip Builder →", key="btn_trip"):
     st.switch_page("pages/Trip_Builder.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Feedback Section (main body — avoids sidebar double-render bug) ---
+# --- Feedback Section ---
 st.markdown('<div class="section-label">💬 Send Feedback</div>', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 2])
 with col1:
@@ -282,23 +300,24 @@ if st.button('Send Feedback', key='send_feedback_btn'):
 
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Admin Access (main body — avoids sidebar double-render bug) ---
+# --- Admin Access ---
 with st.expander("🔐 Admin Access"):
     admin_code = st.text_input("Enter admin code:", type="password", key="admin_code_input")
     ADMIN_CODE = st.secrets["Admin_code"]
 
     if st.button("📋 View All Feedbacks", key="view_feedbacks_btn"):
         if admin_code == ADMIN_CODE:
-            feedbacks = list(feedback_collection.find())
-            if feedbacks:
-                for i, f in enumerate(feedbacks, 1):
-                    st.markdown(f"**#{i}**")
-                    st.write(f"⭐ Rating: {f.get('rating', 'N/A')}")
-                    st.write(f"💬 Feedback: {f.get('feedback', 'N/A')}")
-                    st.write(f"📅 Date: {f.get('date', 'N/A')}")
-                    st.divider()
-            else:
-                st.info("No feedbacks found.")
+            if feedback_collection is not None:
+                feedbacks = list(feedback_collection.find())
+                if feedbacks:
+                    for i, f in enumerate(feedbacks, 1):
+                        st.markdown(f"**#{i}**")
+                        st.write(f"⭐ Rating: {f.get('rating', 'N/A')}")
+                        st.write(f"💬 Feedback: {f.get('feedback', 'N/A')}")
+                        st.write(f"📅 Date: {f.get('date', 'N/A')}")
+                        st.divider()
+                else:
+                    st.info("No feedbacks found.")
         else:
             st.error("❌ Wrong code.")
 
@@ -316,8 +335,9 @@ with st.expander("🔐 Admin Access"):
         col1, col2 = st.columns(2)
         with col1:
             if st.button("✅ Yes, Delete All", key="yes_delete_btn"):
-                result = feedback_collection.delete_many({})
-                st.success(f"Deleted {result.deleted_count} feedbacks.")
+                if feedback_collection is not None:
+                    result = feedback_collection.delete_many({})
+                    st.success(f"Deleted {result.deleted_count} feedbacks.")
                 st.session_state.confirm_delete = False
         with col2:
             if st.button("❌ Cancel", key="cancel_delete_btn"):
