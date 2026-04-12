@@ -4,13 +4,13 @@ from datetime import date
 from pymongo.mongo_client import MongoClient
 from color import edit
 
-st.set_page_config(page_title="FLITO: AI Travel Companion", page_icon='logo.png')
+st.set_page_config(page_title="FLITO: AI Travel Companion", page_icon='logo.png', layout="wide")
 
 edit()
 
 # --- Sidebar ---
 with st.sidebar:
-    st.logo(image='logo.png', size='large', icon_image='logo.png', layout="wide")
+    st.logo(image='logo.png', size='large', icon_image='logo.png')
     
     # --- Navigation ---
     #pg = st.navigation([
