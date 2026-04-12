@@ -47,11 +47,12 @@ pg = st.navigation([
     st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️"),
 ])
 
-pg.run()
 if mongo_ok:
         st.success("✅ Connected to flito")
 else:
     st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
+    
+pg.run()
 # ─────────────────────────────────────────────────────────────────────────────
 # Everything below only runs when FLITO.py is the active page
 # ─────────────────────────────────────────────────────────────────────────────
