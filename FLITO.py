@@ -49,11 +49,16 @@ with st.sidebar:
     if not mongo_ok:
         st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
 
-# --- FIX: pg.run() moved OUTSIDE the sidebar block ---
+# --- Run the selected page ---
+# pg.run() hands off rendering to whichever page is active.
+# st.stop() then halts FLITO.py so the main page content below
+# does NOT render on top of other pages.
 pg.run()
+st.stop()
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Everything below only runs when FLITO.py is the active page
+# Everything below only executes when FLITO.py itself is the active page.
+# st.stop() above exits early for all other pages before reaching this point.
 # ─────────────────────────────────────────────────────────────────────────────
 
 # --- Header ---
