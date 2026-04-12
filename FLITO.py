@@ -157,7 +157,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 if st.button("Sign Up →", key="btn_signup"):
-    st.switch_page("pages/#🔐_Sign_In_or_Up.py")
+    st.switch_page("pages/🔐_Sign_In_or_Up.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
 # --- Card: Map ---
