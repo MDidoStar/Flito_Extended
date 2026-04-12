@@ -25,20 +25,20 @@ with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
     
     # --- Navigation ---
-    pg = st.navigation([
-        st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
-        st.Page("pages/Sign_In_or_Up.py", title="Sign In or Up", icon="🔐"),
-        st.Page("pages/Map.py", title="Map", icon="🗺️"),
-        st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
-        st.Page("pages/Food.py", title="Food", icon="🍝"),
-        st.Page("pages/Tourism.py", title="Tourism", icon="🏝️"),
-        st.Page("pages/Transportation.py", title="Transportation", icon="🚗"),
-        st.Page("pages/Shopping.py", title="Shopping", icon="🛍️"),
-        st.Page("pages/Budget.py", title="Budget", icon="💰"),
-        st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
-        st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
-        st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️"),
-    ])
+    #pg = st.navigation([
+     #   st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
+      #  st.Page("pages/Sign_In_or_Up.py", title="Sign In or Up", icon="🔐"),
+       # st.Page("pages/Map.py", title="Map", icon="🗺️"),
+        #st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
+        #st.Page("pages/Food.py", title="Food", icon="🍝"),
+        #st.Page("pages/Tourism.py", title="Tourism", icon="🏝️"),
+        #st.Page("pages/Transportation.py", title="Transportation", icon="🚗"),
+        #st.Page("pages/Shopping.py", title="Shopping", icon="🛍️"),
+        #st.Page("pages/Budget.py", title="Budget", icon="💰"),
+        #st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
+        #st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
+        #st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️"),
+    #])
     
 # --- Run the selected page ---
 # pg.run() hands off rendering to whichever page is active.
@@ -373,7 +373,7 @@ st.caption('🌟 AI-powered recommendations using Google Gemini | Currency data 
 
 
 
-pg.run()
+#pg.run()
 
 
 
