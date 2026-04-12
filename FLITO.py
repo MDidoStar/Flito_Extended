@@ -8,18 +8,6 @@ st.set_page_config(page_title="FLITO: AI Traveling Blogger", page_icon='logo.png
 
 edit()
 
-
-
-
-
-
-
-
-
-
-
-
-
 # --- Sidebar ---
 with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
