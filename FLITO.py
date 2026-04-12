@@ -10,7 +10,7 @@ edit()
 
 # --- Sidebar ---
 with st.sidebar:
-    st.logo(image='logo.png', size='large', icon_image='logo.png')
+    st.logo(image='logo.png', size='large', icon_image='logo.png', layout="wide")
     
     # --- Navigation ---
     #pg = st.navigation([
