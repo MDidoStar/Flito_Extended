@@ -29,7 +29,6 @@ db = st.session_state.get("flito_db", None)
 # --- Sidebar ---
 with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
-    
 
     # --- Navigation ---
     pg = st.navigation([
@@ -49,8 +48,10 @@ with st.sidebar:
 
     if not mongo_ok:
         st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
-        
-    pg.run()
+
+# --- FIX: pg.run() moved OUTSIDE the sidebar block ---
+pg.run()
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Everything below only runs when FLITO.py is the active page
 # ─────────────────────────────────────────────────────────────────────────────
