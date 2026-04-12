@@ -8,6 +8,34 @@ st.set_page_config(page_title="FLITO: AI Traveling Blogger", page_icon='logo.png
 edit()
 
 
+
+# --- MongoDB Setup (cached in session_state to prevent repeated connections) ---
+if "mongo_ok" not in st.session_state:
+    uri = st.secrets["mongodb_uri"]
+    try:
+        client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+        client.admin.command("ping")
+        db = client["flito_db"]
+        st.session_state["mongo_ok"] = True
+        st.session_state["flito_db"] = db
+        st.session_state["feedback_collection"] = db["feedback"]
+    except Exception as e:
+        st.session_state["mongo_ok"] = False
+        st.session_state["mongo_error"] = str(e)
+
+mongo_ok = st.session_state.get("mongo_ok", False)
+feedback_collection = st.session_state.get("feedback_collection", None)
+db = st.session_state.get("flito_db", None)
+
+
+
+
+if not mongo_ok:
+    st.error(f"Error:{mongo_error}")
+
+
+
+
 # --- Header ---
 st.markdown('<div class="hero-title">🌍 FLITO</div>', unsafe_allow_html=True)
 st.markdown('<div class="hero-subtitle">Your AI-powered travel companion — pick a tool and start exploring.</div>', unsafe_allow_html=True)
