@@ -29,11 +29,7 @@ db = st.session_state.get("flito_db", None)
 # --- Sidebar ---
 with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
-    if mongo_ok:
-        st.success("✅ Connected to flito")
-    else:
-        st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
-        st.stop()
+    
 
 # --- Navigation ---
 pg = st.navigation([
@@ -52,8 +48,10 @@ pg = st.navigation([
 ])
 
 pg.run()
-st.stop()  # ← Prevents FLITO.py body from rendering when other pages are active
-
+if mongo_ok:
+        st.success("✅ Connected to flito")
+    else:
+        st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
 # ─────────────────────────────────────────────────────────────────────────────
 # Everything below only runs when FLITO.py is the active page
 # ─────────────────────────────────────────────────────────────────────────────
