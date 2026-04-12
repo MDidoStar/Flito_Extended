@@ -1,106 +1,183 @@
-# Importing libraries
 import streamlit as st
 from datetime import date
 from pymongo.mongo_client import MongoClient
 from color import edit
 
-st.set_page_config(page_title="FLITO: AI Traveling Blogger", page_icon='logo.png', layout="wide")
+st.set_page_config(
+    page_title="FLITO: AI Traveling Blogger",
+    page_icon="logo.png",
+    layout="wide"
+)
 
 edit()
 
-# --- MongoDB Setup (cached in session_state to prevent repeated connections) ---
+# -----------------------------------------------------------------------------
+# MongoDB Setup
+# Cache connection status in session_state to avoid reconnecting on every rerun
+# -----------------------------------------------------------------------------
 if "mongo_ok" not in st.session_state:
     uri = st.secrets["mongodb_uri"]
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=5000)
         client.admin.command("ping")
         db = client["flito_db"]
+
         st.session_state["mongo_ok"] = True
         st.session_state["flito_db"] = db
         st.session_state["feedback_collection"] = db["feedback"]
     except Exception as e:
         st.session_state["mongo_ok"] = False
         st.session_state["mongo_error"] = str(e)
+        st.session_state["flito_db"] = None
+        st.session_state["feedback_collection"] = None
 
 mongo_ok = st.session_state.get("mongo_ok", False)
-feedback_collection = st.session_state.get("feedback_collection", None)
 db = st.session_state.get("flito_db", None)
+feedback_collection = st.session_state.get("feedback_collection", None)
 
-# --- Sidebar ---
+# -----------------------------------------------------------------------------
+# Sidebar
+# -----------------------------------------------------------------------------
 with st.sidebar:
-    st.logo(image='logo.png', size='large', icon_image='logo.png')
-    
+    st.logo(image="logo.png", size="large", icon_image="logo.png")
 
-    # --- Navigation ---
-    pg = st.navigation([
-        st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
-        st.Page("pages/sign_up.py", title="Sign In or Up", icon="🔐"),
-        st.Page("pages/Map.py", title="Map", icon="🗺️"),
-        st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
-        st.Page("pages/Food.py", title="Food", icon="🍝"),
-        st.Page("pages/Tourism.py", title="Tourism", icon="🏝️"),
-        st.Page("pages/Transportation.py", title="Transportation", icon="🚗"),
-        st.Page("pages/Shopping.py", title="Shopping", icon="🛍️"),
-        st.Page("pages/Budget.py", title="Budget", icon="💰"),
-        st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
-        st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
-        st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️"),
-    ])
+# -----------------------------------------------------------------------------
+# Navigation
+# -----------------------------------------------------------------------------
+pg = st.navigation([
+    st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
+    st.Page("pages/sign_up.py", title="Sign In or Up", icon="🔐"),
+    st.Page("pages/Map.py", title="Map", icon="🗺️"),
+    st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
+    st.Page("pages/Food.py", title="Food", icon="🍝"),
+    st.Page("pages/Tourism.py", title="Tourism", icon="🏝️"),
+    st.Page("pages/Transportation.py", title="Transportation", icon="🚗"),
+    st.Page("pages/Shopping.py", title="Shopping", icon="🛍️"),
+    st.Page("pages/Budget.py", title="Budget", icon="💰"),
+    st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
+    st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
+    st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️"),
+])
 
-    if mongo_ok:
-            st.success("✅ Connected to flito")
-    else:
-        st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
-        
-    pg.run()
-# ─────────────────────────────────────────────────────────────────────────────
-# Everything below only runs when FLITO.py is the active page
-# ─────────────────────────────────────────────────────────────────────────────
+pg.run()
 
-# --- Header ---
+# -----------------------------------------------------------------------------
+# Show DB error only if connection failed
+# This avoids repeated "Connected to flito" messages on every rerun
+# -----------------------------------------------------------------------------
+if not mongo_ok:
+    st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
+
+# -----------------------------------------------------------------------------
+# Main Page Content
+# -----------------------------------------------------------------------------
 st.markdown('<div class="hero-title">🌍 FLITO</div>', unsafe_allow_html=True)
-st.markdown('<div class="hero-subtitle">Your AI-powered travel companion — pick a tool and start exploring.</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="hero-subtitle">Your AI-powered travel companion — pick a tool and start exploring.</div>',
+    unsafe_allow_html=True
+)
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Greeting + Preferences ---
+# -----------------------------------------------------------------------------
+# Greeting + Preferences
+# -----------------------------------------------------------------------------
 user = st.session_state.get("logged_in_user")
+
 if user:
     first = user.get("first_name", user.get("Username", "Traveler"))
-    last  = user.get("last_name", "")
-    st.markdown(f'<div class="hero-subtitle">👋 Welcome back, <b>{first} {last}</b>! Great to have you here.</div>', unsafe_allow_html=True)
+    last = user.get("last_name", "")
+    st.markdown(
+        f'<div class="hero-subtitle">👋 Welcome back, <b>{first} {last}</b>! Great to have you here.</div>',
+        unsafe_allow_html=True
+    )
 
     with st.expander("⚙️ Your Travel Preferences", expanded=False):
         st.write("Tell us how you like to travel — these will personalize all AI suggestions.")
         existing_prefs = user.get("preferences", {})
+
         col1, col2 = st.columns(2)
+
         with col1:
-            pref_language  = st.text_input("Preferred Language", value=existing_prefs.get("language", ""), key="pref_lang")
+            pref_language = st.text_input(
+                "Preferred Language",
+                value=existing_prefs.get("language", ""),
+                key="pref_lang"
+            )
+
             budget_options = ["Budget-friendly", "Moderate", "Luxury"]
-            budget_index = budget_options.index(existing_prefs.get("budget", "Moderate")) if existing_prefs.get("budget") in budget_options else 1
-            pref_budget    = st.selectbox("Budget Style", budget_options, index=budget_index, key="pref_budget")
-            food_options   = ["No preference", "Vegetarian", "Vegan", "Halal", "Seafood lover", "Local cuisine only"]
-            food_index     = food_options.index(existing_prefs.get("food", "No preference")) if existing_prefs.get("food") in food_options else 0
-            pref_food      = st.selectbox("Food Preference", food_options, index=food_index, key="pref_food")
+            budget_index = (
+                budget_options.index(existing_prefs.get("budget", "Moderate"))
+                if existing_prefs.get("budget") in budget_options else 1
+            )
+            pref_budget = st.selectbox(
+                "Budget Style",
+                budget_options,
+                index=budget_index,
+                key="pref_budget"
+            )
+
+            food_options = [
+                "No preference", "Vegetarian", "Vegan", "Halal",
+                "Seafood lover", "Local cuisine only"
+            ]
+            food_index = (
+                food_options.index(existing_prefs.get("food", "No preference"))
+                if existing_prefs.get("food") in food_options else 0
+            )
+            pref_food = st.selectbox(
+                "Food Preference",
+                food_options,
+                index=food_index,
+                key="pref_food"
+            )
+
         with col2:
-            travel_options  = ["Explorer", "Relaxed", "Adventure", "Cultural", "Family", "Business"]
-            travel_index    = travel_options.index(existing_prefs.get("travel_style", "Explorer")) if existing_prefs.get("travel_style") in travel_options else 0
-            pref_travel     = st.selectbox("Travel Style", travel_options, index=travel_index, key="pref_travel")
+            travel_options = ["Explorer", "Relaxed", "Adventure", "Cultural", "Family", "Business"]
+            travel_index = (
+                travel_options.index(existing_prefs.get("travel_style", "Explorer"))
+                if existing_prefs.get("travel_style") in travel_options else 0
+            )
+            pref_travel = st.selectbox(
+                "Travel Style",
+                travel_options,
+                index=travel_index,
+                key="pref_travel"
+            )
+
             activity_options = ["Sightseeing", "Museums", "Beaches", "Shopping", "Nightlife", "Nature & Hiking"]
-            activity_index   = activity_options.index(existing_prefs.get("activity", "Sightseeing")) if existing_prefs.get("activity") in activity_options else 0
-            pref_activity   = st.selectbox("Favorite Activity", activity_options, index=activity_index, key="pref_activity")
+            activity_index = (
+                activity_options.index(existing_prefs.get("activity", "Sightseeing"))
+                if existing_prefs.get("activity") in activity_options else 0
+            )
+            pref_activity = st.selectbox(
+                "Favorite Activity",
+                activity_options,
+                index=activity_index,
+                key="pref_activity"
+            )
+
             transport_options = ["Any", "Taxi", "Public Transport", "Car Rental", "Walking"]
-            transport_index   = transport_options.index(existing_prefs.get("transport", "Any")) if existing_prefs.get("transport") in transport_options else 0
-            pref_transport  = st.selectbox("Preferred Transport", transport_options, index=transport_index, key="pref_transport")
+            transport_index = (
+                transport_options.index(existing_prefs.get("transport", "Any"))
+                if existing_prefs.get("transport") in transport_options else 0
+            )
+            pref_transport = st.selectbox(
+                "Preferred Transport",
+                transport_options,
+                index=transport_index,
+                key="pref_transport"
+            )
 
         if st.button("💾 Save Preferences", key="save_prefs"):
             new_prefs = {
-                "language":     pref_language,
-                "budget":       pref_budget,
-                "food":         pref_food,
+                "language": pref_language,
+                "budget": pref_budget,
+                "food": pref_food,
                 "travel_style": pref_travel,
-                "activity":     pref_activity,
-                "transport":    pref_transport,
+                "activity": pref_activity,
+                "transport": pref_transport,
             }
+
             try:
                 if db is not None:
                     db["users"].update_one(
@@ -115,13 +192,17 @@ if user:
                 st.error(f"Could not save preferences: {e}")
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
 else:
     st.info("Sign in or Up to personalize your data")
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
+# -----------------------------------------------------------------------------
+# Tools Section
+# -----------------------------------------------------------------------------
 st.markdown('<div class="section-label">Available Tools</div>', unsafe_allow_html=True)
 
-# ------SignUp Card------#
+# SignUp Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">🔐 FLITO SignUp</div>
@@ -132,7 +213,7 @@ if st.button("Sign Up →", key="btn_signup"):
     st.switch_page("pages/sign_up.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Map ---
+# Map Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">🗺️ FLITO Map</div>
@@ -146,7 +227,7 @@ if st.button("Open Map →", key="btn_map"):
     st.switch_page("pages/Map.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Hotels ---
+# Hotels Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">🏨 FLITO Hotels</div>
@@ -160,7 +241,7 @@ if st.button("Open Hotels →", key="btn_hotels"):
     st.switch_page("pages/Hotels.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Food ---
+# Food Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">🍝 FLITO Food</div>
@@ -174,7 +255,7 @@ if st.button("Open Food →", key="btn_food"):
     st.switch_page("pages/Food.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Tourism ---
+# Tourism Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">🏝️ FLITO Tourism</div>
@@ -188,7 +269,7 @@ if st.button("Open Tourism →", key="btn_tourism"):
     st.switch_page("pages/Tourism.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Transportation ---
+# Transportation Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">🚗 FLITO Transportation</div>
@@ -202,7 +283,7 @@ if st.button("Open Transportation →", key="btn_transport"):
     st.switch_page("pages/Transportation.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Shopping ---
+# Shopping Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">🛍️ FLITO Shopping</div>
@@ -216,7 +297,7 @@ if st.button("Open Shopping →", key="btn_shopping"):
     st.switch_page("pages/Shopping.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Budget ---
+# Budget Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">💰 FLITO Budget</div>
@@ -230,7 +311,7 @@ if st.button("Open Budget →", key="btn_budget"):
     st.switch_page("pages/Budget.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Currency ---
+# Currency Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">💱 FLITO Currency Converter</div>
@@ -244,7 +325,7 @@ if st.button("Open Currency →", key="btn_currency"):
     st.switch_page("pages/Currency.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Translation ---
+# Translation Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">🗣️ FLITO Translation</div>
@@ -258,7 +339,7 @@ if st.button("Open Translation →", key="btn_translate"):
     st.switch_page("pages/Translation.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Card: Trip Builder ---
+# Trip Builder Card
 st.markdown("""
 <div class="app-card">
     <div class="app-card-title">✈️ FLITO Trip Builder (Premium)</div>
@@ -273,16 +354,21 @@ if st.button("Open Trip Builder →", key="btn_trip"):
     st.switch_page("pages/Trip_Builder.py")
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Feedback Section ---
+# -----------------------------------------------------------------------------
+# Feedback Section
+# -----------------------------------------------------------------------------
 st.markdown('<div class="section-label">💬 Send Feedback</div>', unsafe_allow_html=True)
+
 col1, col2 = st.columns([1, 2])
+
 with col1:
-    st.write('Rate us (out of 5):')
-    rating = st.feedback('stars', key="feedback_stars")
+    st.write("Rate us (out of 5):")
+    rating = st.feedback("stars", key="feedback_stars")
+
 with col2:
     feedback_text = st.text_input("Any suggestions for improvement?", key="feedback_text_input")
 
-if st.button('Send Feedback', key='send_feedback_btn'):
+if st.button("Send Feedback", key="send_feedback_btn"):
     if feedback_collection is not None:
         try:
             val_rating = rating + 1 if rating is not None else None
@@ -300,10 +386,15 @@ if st.button('Send Feedback', key='send_feedback_btn'):
 
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-# --- Admin Access ---
+# -----------------------------------------------------------------------------
+# Admin Access
+# -----------------------------------------------------------------------------
 with st.expander("🔐 Admin Access"):
     admin_code = st.text_input("Enter admin code:", type="password", key="admin_code_input")
     ADMIN_CODE = st.secrets["Admin_code"]
+
+    if "confirm_delete" not in st.session_state:
+        st.session_state.confirm_delete = False
 
     if st.button("📋 View All Feedbacks", key="view_feedbacks_btn"):
         if admin_code == ADMIN_CODE:
@@ -318,11 +409,10 @@ with st.expander("🔐 Admin Access"):
                         st.divider()
                 else:
                     st.info("No feedbacks found.")
+            else:
+                st.error("Database not available.")
         else:
             st.error("❌ Wrong code.")
-
-    if "confirm_delete" not in st.session_state:
-        st.session_state.confirm_delete = False
 
     if st.button("🗑️ Clear All Feedbacks", key="clear_feedbacks_btn"):
         if admin_code == ADMIN_CODE:
@@ -333,15 +423,21 @@ with st.expander("🔐 Admin Access"):
     if st.session_state.confirm_delete:
         st.warning("⚠️ Are you sure? This will delete ALL feedbacks!")
         col1, col2 = st.columns(2)
+
         with col1:
             if st.button("✅ Yes, Delete All", key="yes_delete_btn"):
                 if feedback_collection is not None:
                     result = feedback_collection.delete_many({})
                     st.success(f"Deleted {result.deleted_count} feedbacks.")
+                else:
+                    st.error("Database not available.")
                 st.session_state.confirm_delete = False
+
         with col2:
             if st.button("❌ Cancel", key="cancel_delete_btn"):
                 st.session_state.confirm_delete = False
 
-# --- Footer ---
-st.caption('🌟 AI-powered recommendations using Google Gemini | Currency data from ExchangeRate-API')
+# -----------------------------------------------------------------------------
+# Footer
+# -----------------------------------------------------------------------------
+st.caption("🌟 AI-powered recommendations using Google Gemini | Currency data from ExchangeRate-API")
