@@ -31,7 +31,6 @@ with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
     if mongo_ok:
         st.success("✅ Connected to flito")
-    break
     else:
         st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
         st.stop()
