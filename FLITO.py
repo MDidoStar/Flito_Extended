@@ -31,28 +31,28 @@ with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
     
 
-# --- Navigation ---
-pg = st.navigation([
-    st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
-    st.Page("pages/sign_up.py", title="Sign In or Up", icon="🔐"),
-    st.Page("pages/Map.py", title="Map", icon="🗺️"),
-    st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
-    st.Page("pages/Food.py", title="Food", icon="🍝"),
-    st.Page("pages/Tourism.py", title="Tourism", icon="🏝️"),
-    st.Page("pages/Transportation.py", title="Transportation", icon="🚗"),
-    st.Page("pages/Shopping.py", title="Shopping", icon="🛍️"),
-    st.Page("pages/Budget.py", title="Budget", icon="💰"),
-    st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
-    st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
-    st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️"),
-])
+    # --- Navigation ---
+    pg = st.navigation([
+        st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
+        st.Page("pages/sign_up.py", title="Sign In or Up", icon="🔐"),
+        st.Page("pages/Map.py", title="Map", icon="🗺️"),
+        st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
+        st.Page("pages/Food.py", title="Food", icon="🍝"),
+        st.Page("pages/Tourism.py", title="Tourism", icon="🏝️"),
+        st.Page("pages/Transportation.py", title="Transportation", icon="🚗"),
+        st.Page("pages/Shopping.py", title="Shopping", icon="🛍️"),
+        st.Page("pages/Budget.py", title="Budget", icon="💰"),
+        st.Page("pages/Currency.py", title="Currency Converter", icon="💱"),
+        st.Page("pages/Translation.py", title="Translation", icon="🗣️"),
+        st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️"),
+    ])
 
-if mongo_ok:
-        st.success("✅ Connected to flito")
-else:
-    st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
-    
-pg.run()
+    if mongo_ok:
+            st.success("✅ Connected to flito")
+    else:
+        st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
+        
+    pg.run()
 # ─────────────────────────────────────────────────────────────────────────────
 # Everything below only runs when FLITO.py is the active page
 # ─────────────────────────────────────────────────────────────────────────────
