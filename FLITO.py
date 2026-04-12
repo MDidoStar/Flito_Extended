@@ -12,7 +12,7 @@ edit()
 # --- Sidebar ---
 with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
-    st.switch_page("pages/home.py")
+    
     # --- Navigation ---
     pg = st.navigation([
         st.Page("pages/home.py", title="Main Page (FLITO)", icon="🌍"),
@@ -29,12 +29,12 @@ with st.sidebar:
         st.Page("pages/Trip_Builder.py", title="Trip Builder", icon="✈️"),
     ])
     
-
 # --- Run the selected page ---
 # pg.run() hands off rendering to whichever page is active.
 # st.stop() then halts FLITO.py so the main page content below
 # does NOT render on top of other pages.
 pg.run()
+st.switch_page("pages/home.py")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
