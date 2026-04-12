@@ -52,6 +52,7 @@ pg = st.navigation([
 ])
 
 pg.run()
+st.stop()  # ← Prevents FLITO.py body from rendering when other pages are active
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Everything below only runs when FLITO.py is the active page
