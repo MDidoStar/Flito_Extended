@@ -50,8 +50,8 @@ pg = st.navigation([
 pg.run()
 if mongo_ok:
         st.success("✅ Connected to flito")
-    else:
-        st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
+else:
+    st.error(f"❌ Connection failed: {st.session_state.get('mongo_error', 'Unknown error')}")
 # ─────────────────────────────────────────────────────────────────────────────
 # Everything below only runs when FLITO.py is the active page
 # ─────────────────────────────────────────────────────────────────────────────
