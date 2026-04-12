@@ -26,7 +26,7 @@ with st.sidebar:
     
     # --- Navigation ---
     pg = st.navigation([
-        st.Page("pages/FLITO.py", title="Main Page (FLITO)", icon="🌍"),
+        st.Page("FLITO.py", title="Main Page (FLITO)", icon="🌍"),
         st.Page("pages/Sign_In_or_Up.py", title="Sign In or Up", icon="🔐"),
         st.Page("pages/Map.py", title="Map", icon="🗺️"),
         st.Page("pages/Hotels.py", title="Hotels", icon="🏨"),
