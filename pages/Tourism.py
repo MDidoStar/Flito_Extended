@@ -93,7 +93,7 @@ with st.sidebar:
     output_number = st.slider("How many outputs shall I suggest?:", 1, 10, 1, key="output_num")
     st.divider()
     if st.button("← Back to FLITO", key="back_btn"):
-        st.switch_page("E:\Coding Mohamed\Flito Extened\Flito-main\FLITO.py")
+        st.switch_page("FLITO.py")
 
 st.title("🏝️ Tourism")
 st.write("Discover Tourist Attractions!")
