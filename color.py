@@ -388,6 +388,44 @@ def edit():
     ::-webkit-scrollbar-thumb { background: #CDA555; border-radius: 99px; }
     ::-webkit-scrollbar-thumb:hover { background: #e0bb77; }
 
+    /* ─── Input / Select text always white ──────────────────── */
+    .stTextInput input,
+    .stNumberInput input,
+    .stTextArea textarea,
+    div[data-baseweb="select"] input,
+    div[data-baseweb="select"] [class*="singleValue"],
+    div[data-baseweb="select"] [class*="placeholder"],
+    div[data-baseweb="input"] input,
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    textarea {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+        opacity: 1 !important;
+    }
+
+    /* Placeholder text — slightly dimmed but still visible */
+    .stTextInput input::placeholder,
+    .stNumberInput input::placeholder,
+    .stTextArea textarea::placeholder,
+    textarea::placeholder,
+    input::placeholder {
+        color: #AAAAAA !important;
+        -webkit-text-fill-color: #AAAAAA !important;
+        opacity: 1 !important;
+    }
+
+    /* Fix autofill turning inputs dark with gray text */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        -webkit-text-fill-color: #FFFFFF !important;
+        -webkit-box-shadow: 0 0 0px 1000px #1F284A inset !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
     /* ─── Custom utility classes ────────────────────────────── */
     .hero-title {
         font-family: 'Bebas Neue', sans-serif;
