@@ -109,7 +109,7 @@ with st.sidebar:
 #    st.subheader('Would you like to go Premium?')
 #    st.link_button('Subscribe now!', 'https://buy.stripe.com/test_3cIcN592b5iLfN93mU8so00')
     if st.button("← Back to FLITO", key="back_btn"):
-        st.switch_page("E:\Coding Mohamed\Flito Extened\Flito-main\FLITO.py")
+        st.switch_page("FLITO.py")
 
 st.title("✈️ Trip Builder (Premium)")
 st.write("Get a complete day-by-day itinerary tailored to your dates and budget.")
