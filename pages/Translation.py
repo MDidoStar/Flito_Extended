@@ -24,7 +24,7 @@ with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
     st.divider()
     if st.button("← Back to FLITO", key="back_btn"):
-        st.switch_page("E:\Coding Mohamed\Flito Extened\Flito-main\FLITO.py")
+        st.switch_page("FLITO.py")
 
 st.title("🗣️ Translation")
 st.write("Translate Any Language!")
