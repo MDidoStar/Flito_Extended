@@ -151,7 +151,13 @@ if st.button('Search now', key='food_search'):
             response = model.generate_content(prompt)
             st.write(response.text)
             pdf_content = generate_pdf_from_text(response.text)
-            st.download_button(label='Download PDF ⬇️', data=pdf_content, file_name='food_recommendations.pdf', mime="application/pdf")
+            if prefs.get('language', 'English') == "English"
+                st.download_button(label='Download PDF ⬇️', data=pdf_content, file_name='food_recommendations.pdf', mime="application/pdf")
+
+
+
 
 st.write('---')
 st.caption('🌟 AI-powered recommendations using Google Gemini')
+
+
