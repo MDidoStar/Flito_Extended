@@ -103,7 +103,7 @@ with st.sidebar:
     output_number = st.slider("How many outputs shall I suggest?:", 1, 10, 1, key="output_num")
     st.divider()
     if st.button("← Back to FLITO", key="back_btn"):
-        st.switch_page("E:\Coding Mohamed\Flito Extened\Flito-main\FLITO.py")
+        st.switch_page("FLITO.py")
 
 # --- Page ---
 st.title("🏨 Hotels")
@@ -159,7 +159,8 @@ if st.button('🔎 Search now', key='hotel_search'):
             response = model.generate_content(prompt)
             st.write(response.text)
             pdf_content = generate_pdf_from_text(response.text)
-            st.download_button(label='Download PDF ⬇️', data=pdf_content, file_name='hotel_recommendations.pdf', mime="application/pdf")
-
+            prfdlang = prefs.get('language', 'English')
+            if prfdlang == "English":
+                st.download_button(label='Download PDF ⬇️', data=pdf_content, file_name='hotel_recommendations.pdf', mime="application/pdf")
 st.write('---')
 st.caption('🌟 AI-powered recommendations using Google Gemini')
