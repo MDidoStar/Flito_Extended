@@ -151,7 +151,8 @@ if st.button('Search now', key='food_search'):
             response = model.generate_content(prompt)
             st.write(response.text)
             pdf_content = generate_pdf_from_text(response.text)
-            if prefs.get('language', 'English') == "English"
+            prlang = prefs.get('language', 'English')
+            if prlang == "English"
                 st.download_button(label='Download PDF ⬇️', data=pdf_content, file_name='food_recommendations.pdf', mime="application/pdf")
 
 
