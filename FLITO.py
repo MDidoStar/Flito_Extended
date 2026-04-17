@@ -7,7 +7,7 @@ from color import edit
 st.set_page_config(page_title="FLITO: AI Travel Companion", page_icon='logo.png', layout="wide")
 
 edit()
-
+st.logo(image='logo.png', size='large', icon_image='logo.png')
 # --- Sidebar ---
 with st.sidebar:
     st.logo(image='logo.png', size='large', icon_image='logo.png')
@@ -129,7 +129,7 @@ if user:
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 else:
-    st.info("Sign in or Up to personalize your data")
+    st.info("Sign in or Sign Up to personalize your data")
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
 st.markdown('<div class="section-label">Available Tools</div>', unsafe_allow_html=True)
