@@ -33,7 +33,7 @@ feedback_collection = st.session_state.get("feedback_collection", None)
 db = st.session_state.get("flito_db", None)
 
 
-if mongo_error != "":
+if not mongo_error == "":
     st.error(f"Error:{mongo_error}")
 
 
