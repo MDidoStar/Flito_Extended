@@ -32,8 +32,8 @@ mongo_ok = st.session_state.get("mongo_ok", False)
 feedback_collection = st.session_state.get("feedback_collection", None)
 db = st.session_state.get("flito_db", None)
 
-
-if not st.session_state["mongo_error"] == "":
+sme = st.session_state["mongo_error"]
+if not sme == "":
     st.error(f"Error:{st.session_state["mongo_error"]}")
 
 
