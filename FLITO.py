@@ -72,7 +72,23 @@ if not mongo_ok:
 
 
 # --- Header ---
-st.markdown('<div class="hero-title">🌍 FLITO</div>', unsafe_allow_html=True)
+#st.markdown('<div class="hero-title">🌍 FLITO</div>', unsafe_allow_html=True)
+
+import base64
+
+# Load and encode the logo
+with open("logo.png", "rb") as f:
+    logo_b64 = base64.b64encode(f.read()).decode()
+
+# --- Header ---
+st.markdown(
+    f'<div class="hero-title">'
+    f'<img src="data:image/png;base64,{logo_b64}" style="height:50px; vertical-align:middle; margin-right:10px;">'
+    f'FLITO'
+    f'</div>',
+    unsafe_allow_html=True
+)
+
 st.markdown('<div class="hero-subtitle">Your AI-powered travel companion — pick a tool and start exploring.</div>', unsafe_allow_html=True)
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
