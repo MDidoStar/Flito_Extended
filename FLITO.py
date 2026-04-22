@@ -27,9 +27,9 @@ if "mongo_ok" not in st.session_state:
     except Exception as e:
         st.session_state["mongo_ok"] = False
         st.session_state["mongo_error"] = str(e)
-
+        mongo_erorr = st.session_state.get("mongo_okmongo_error", str(e))
 mongo_ok = st.session_state.get("mongo_ok", False)
-mongo_erorr = st.session_state.get("mongo_okmongo_error", str(e))
+mongo_erorr = ""
 feedback_collection = st.session_state.get("feedback_collection", None)
 db = st.session_state.get("flito_db", None)
 
