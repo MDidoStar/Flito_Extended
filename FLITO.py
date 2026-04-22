@@ -29,12 +29,12 @@ if "mongo_ok" not in st.session_state:
         st.session_state["mongo_error"] = str(e)
 
 mongo_ok = st.session_state.get("mongo_ok", False)
+mongo_erorr = st.session_state.get("mongo_okmongo_error", str(e))
 feedback_collection = st.session_state.get("feedback_collection", None)
 db = st.session_state.get("flito_db", None)
 
-#sme = st.session_state["mongo_error"]
-#if not sme == "":
-#    st.error(f"Error:{st.session_state["mongo_error"]}")
+if mongo_erorr:
+    st.error(f"Error:{mongo_erorr}")
 
 
 
