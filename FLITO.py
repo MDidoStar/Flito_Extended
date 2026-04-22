@@ -15,6 +15,7 @@ with st.sidebar:
     
     
 # --- MongoDB Setup (cached in session_state to prevent repeated connections) ---
+mongo_erorr = ""
 if "mongo_ok" not in st.session_state:
     uri = st.secrets["mongodb_uri"]
     try:
@@ -29,7 +30,7 @@ if "mongo_ok" not in st.session_state:
         st.session_state["mongo_error"] = str(e)
         mongo_erorr = st.session_state.get("mongo_okmongo_error", str(e))
 mongo_ok = st.session_state.get("mongo_ok", False)
-mongo_erorr = ""
+
 feedback_collection = st.session_state.get("feedback_collection", None)
 db = st.session_state.get("flito_db", None)
 
