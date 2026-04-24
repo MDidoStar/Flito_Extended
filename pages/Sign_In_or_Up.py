@@ -15,6 +15,58 @@ edit()
 st.markdown('<div class="hero-title">🔐 FLITO Sign In or Sign Up</div>', unsafe_allow_html=True)
 st.markdown('<div class="hero-subtitle">Create your account to start exploring.</div>', unsafe_allow_html=True)
 st.markdown("---")
+
+with st.expander("🔐 Sign In"):
+    email_username = st.text_input("Enter your Email/Username:", key="emaiuserl")
+    pass_sign_in   = st.text_input("Enter your Password:", type="password", key="admin_coe")
+
+    uri = st.secrets["mongodb_uri"]
+    try:
+        client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+        db = client["flito_db"]
+        users_collection = db["users"]
+        mongo_ok = True
+    except Exception:
+        mongo_ok = False
+
+    if st.button("📋 Sign In", key="btn_all_uses"):
+        if not email_username or not pass_sign_in:
+            st.error("Please enter both your Email/Username and Password.")
+        elif not mongo_ok:
+            st.error("❌ Database unavailable.")
+        else:
+            # Hash the entered password to compare with stored hash
+            hashed_input = hashlib.sha256(pass_sign_in.encode()).hexdigest()
+
+            # Search by Username OR Email
+            user = users_collection.find_one({
+                "$or": [
+                    {"Username": email_username},
+                    {"Email":    email_username}
+                ]
+            })
+
+            if user is None:
+                st.error("❌ No account found with that username or email.")
+            elif user.get("password") != hashed_input:
+                st.error("❌ Incorrect password.")
+            else:
+                st.success(f"✅ Welcome back, {user.get('first_name', '')} {user.get('last_name', '')}! 👋")
+                st.session_state["logged_in_user"] = {
+                    "Username":   user.get("Username"),
+                    "first_name": user.get("first_name"),
+                    "last_name":  user.get("last_name"),
+                    "Email":      user.get("Email"),
+                    "Phone":      user.get("Phone"),
+                    "age":        user.get("age"),
+                    "date":       user.get("date"),
+                    "preferences": user.get("preferences", {}),
+                }
+                st.switch_page("FLITO.py")
+
+
+
+
 with st.expander("🔐 Sign Up"):
     st.subheader("Enter Your Data For Flito 🌍")
     
@@ -30,10 +82,7 @@ with st.expander("🔐 Sign Up"):
     Phone = st.text_input("Enter Phone Number (Optional)")
     
     button1 = st.button("Enter all data")
-    prompt = f''' Answer the following with Either 1 or 0 only 1 means yes 0 means no check if this email:"{Email} is valid'''
     if button1:
-        response = model.generate_content(prompt)
-        rt = response.text
         # --- Validation ---
         if not first_name:
             st.error("Please enter your First Name.")
@@ -45,8 +94,6 @@ with st.expander("🔐 Sign Up"):
             st.error("Please enter a Password.")
         elif not Email:
             st.error("Please enter an Email.")
-        elif rt == 0:
-            st.error("Please enter a valid Email.")
         else:
             # All fields valid — show summary and mark as confirmed
             phone_display = Phone if Phone else "Not provided"
@@ -121,7 +168,7 @@ with st.expander("🔐 Sign Up"):
 # ─────────────────────────────────────────────
 # Admin panel (always visible to admins, but separate from the signup flow)
 # ─────────────────────────────────────────────
-with st.expander("🔐 Admin Access"):
+with st.expander("🔐Users of Flito 🌍(Employs only)"):
     admin_code  = st.text_input("Enter admin code:", type="password", key="admin_code")
     ADMIN_CODE  = st.secrets.get("Admin_code")
 
@@ -181,51 +228,19 @@ with st.expander("🔐 Admin Access"):
 
 
     #Sign In
-with st.expander("🔐 Sign In"):
-    email_username = st.text_input("Enter your Email/Username:", key="emaiuserl")
-    pass_sign_in   = st.text_input("Enter your Password:", type="password", key="admin_coe")
 
-    uri = st.secrets["mongodb_uri"]
-    try:
-        client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-        db = client["flito_db"]
-        users_collection = db["users"]
-        mongo_ok = True
-    except Exception:
-        mongo_ok = False
-
-    if st.button("📋 Sign In", key="btn_all_uses"):
-        if not email_username or not pass_sign_in:
-            st.error("Please enter both your Email/Username and Password.")
-        elif not mongo_ok:
-            st.error("❌ Database unavailable.")
-        else:
-            # Hash the entered password to compare with stored hash
-            hashed_input = hashlib.sha256(pass_sign_in.encode()).hexdigest()
-
-            # Search by Username OR Email
-            user = users_collection.find_one({
-                "$or": [
-                    {"Username": email_username},
-                    {"Email":    email_username}
-                ]
-            })
-
-            if user is None:
-                st.error("❌ No account found with that username or email.")
-            elif user.get("password") != hashed_input:
-                st.error("❌ Incorrect password.")
-            else:
-                st.success(f"✅ Welcome back, {user.get('first_name', '')} {user.get('last_name', '')}! 👋")
-                st.session_state["logged_in_user"] = {
-                    "Username":   user.get("Username"),
-                    "first_name": user.get("first_name"),
-                    "last_name":  user.get("last_name"),
-                    "Email":      user.get("Email"),
-                    "Phone":      user.get("Phone"),
-                    "age":        user.get("age"),
-                    "date":       user.get("date"),
-                    "preferences": user.get("preferences", {}),
-                }
-                st.switch_page("FLITO.py")
                     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
