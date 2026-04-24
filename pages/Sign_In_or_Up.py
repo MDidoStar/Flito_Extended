@@ -6,9 +6,11 @@ from datetime import date
 from pymongo.mongo_client import MongoClient
 from color import edit
 st.set_page_config(page_title="FLITO: Sign Up", page_icon='logo.png', layout="wide")
+
+genai.configure(api_key=st.secrets["gemini_api_key"])
+model = genai.GenerativeModel('gemini-2.5-flash')
+
 edit()
-
-
 
 st.markdown('<div class="hero-title">🔐 FLITO Sign In or Sign Up</div>', unsafe_allow_html=True)
 st.markdown('<div class="hero-subtitle">Create your account to start exploring.</div>', unsafe_allow_html=True)
