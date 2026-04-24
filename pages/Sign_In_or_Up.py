@@ -168,7 +168,7 @@ with st.expander("🔐 Sign Up"):
 # ─────────────────────────────────────────────
 # Admin panel (always visible to admins, but separate from the signup flow)
 # ─────────────────────────────────────────────
-with st.expander("🔐Users of Flito 🌍(Employs only)"):
+with st.expander("🔐Admin Access"):
     admin_code  = st.text_input("Enter admin code:", type="password", key="admin_code")
     ADMIN_CODE  = st.secrets.get("Admin_code")
 
