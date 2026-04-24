@@ -4,13 +4,11 @@ import streamlit as st
 import random
 from datetime import date
 from pymongo.mongo_client import MongoClient
-from color import edit
-
+from utilities import ask_gemini, edit
 st.set_page_config(page_title="FLITO: Sign Up", page_icon='logo.png', layout="wide")
 edit()
 
-genai.configure(api_key=st.secrets["gemini_api_key"])
-model = genai.GenerativeModel('gemini-2.5-flash')
+
 
 st.markdown('<div class="hero-title">🔐 FLITO Sign In or Sign Up</div>', unsafe_allow_html=True)
 st.markdown('<div class="hero-subtitle">Create your account to start exploring.</div>', unsafe_allow_html=True)
@@ -32,7 +30,7 @@ with st.expander("🔐 Sign Up"):
     button1 = st.button("Enter all data")
     prompt = f''' Answer the following with Either 1 or 0 only 1 means yes 0 means no check if this email:"{Email} is valid'''
     if button1:
-        response = model.generate_content(prompt)
+        response = ask_gemini(prompt)
         rt = response.text
         # --- Validation ---
         if not first_name:
