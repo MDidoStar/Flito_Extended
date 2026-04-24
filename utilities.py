@@ -1,5 +1,20 @@
 import streamlit as st
+import time
+import google.generativeai as genai
 
+
+genai.configure(api_key=st.secrets["gemini_api_key"])
+model = genai.GenerativeModel('gemini-2.5-flash')
+
+last_call = 0
+
+def ask_gemini(prompt):
+    global last_call
+    elapsed = time.time() - last_call
+    if elapsed < 13:
+        time.sleep(13 - elapsed)
+    last_call = time.time()
+    return model.generate_content(prompt)
 
 def edit():
     st.markdown("""
