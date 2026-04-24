@@ -4,7 +4,7 @@ import streamlit as st
 import random
 from datetime import date
 from pymongo.mongo_client import MongoClient
-from utilities import ask_gemini, edit
+from color import edit
 st.set_page_config(page_title="FLITO: Sign Up", page_icon='logo.png', layout="wide")
 edit()
 
@@ -30,7 +30,7 @@ with st.expander("🔐 Sign Up"):
     button1 = st.button("Enter all data")
     prompt = f''' Answer the following with Either 1 or 0 only 1 means yes 0 means no check if this email:"{Email} is valid'''
     if button1:
-        response = ask_gemini(prompt)
+        response = model.generate_content(prompt)
         rt = response.text
         # --- Validation ---
         if not first_name:
