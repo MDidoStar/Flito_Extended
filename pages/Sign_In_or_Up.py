@@ -45,7 +45,7 @@ with st.expander("🔐 Sign Up"):
             st.error("Please enter a Password.")
         elif not Email:
             st.error("Please enter an Email.")
-        elif rt == 0
+        elif rt == 0:
             st.error("Please enter a valid Email.")
         else:
             # All fields valid — show summary and mark as confirmed
