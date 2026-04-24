@@ -8,7 +8,7 @@ from color import edit
 st.set_page_config(page_title="FLITO: Sign Up", page_icon='logo.png', layout="wide")
 
 genai.configure(api_key=st.secrets["gemini_api_key"])
-model = genai.GenerativeModel('gemini-2.5-flash')
+model = genai.GenerativeModel('gemini-2.5-flash-lite')
 
 edit()
 
