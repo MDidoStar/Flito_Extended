@@ -58,6 +58,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown('<div class="hero-subtitle">From-Life-Inside-To-Outside</div>', unsafe_allow_html=True)
 st.markdown('<div class="hero-subtitle">Your AI-powered travel companion — pick a tool and start exploring.</div>', unsafe_allow_html=True)
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
