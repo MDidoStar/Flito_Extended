@@ -33,7 +33,7 @@ with st.expander("🔐 Sign Up"):
     prompt = f''' Answer the following with Either 1 or 0 only 1 means yes 0 means no check if this email:"{Email} is valid'''
     if button1:
         response = model.generate_content(prompt)
-
+        st.write(response.text)
         # --- Validation ---
         if not first_name:
             st.error("Please enter your First Name.")
@@ -43,7 +43,7 @@ with st.expander("🔐 Sign Up"):
             st.error("Please enter a Username.")
         elif not p:
             st.error("Please enter a Password.")
-        elif not Email or response.text == 0:
+        elif not Email:
             st.error("Please enter a valid Email.")
         else:
             # All fields valid — show summary and mark as confirmed
