@@ -42,7 +42,7 @@ with st.expander("🔐 Sign Up"):
         elif not p:
             st.error("Please enter a Password.")
         elif not Email:
-            st.error("Please enter your Email.")
+            st.error("Please enter a valid Email.")
         else:
             # All fields valid — show summary and mark as confirmed
             phone_display = Phone if Phone else "Not provided"
