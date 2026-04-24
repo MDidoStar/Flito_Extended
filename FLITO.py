@@ -300,7 +300,7 @@ if st.button('Send Feedback', key='send_feedback_btn'):
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
 # --- Admin Access ---
-with st.expander("🔐 Admin Access"):
+with st.expander("🔐 Feedbacks to Flito 🌍(Employs only)"):
     admin_code = st.text_input("Enter admin code:", type="password", key="admin_code_input")
     ADMIN_CODE = st.secrets["Admin_code"]
 
